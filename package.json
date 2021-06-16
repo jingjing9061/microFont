@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "single-spa-vue": "^2.3.0"
+  }
+}
