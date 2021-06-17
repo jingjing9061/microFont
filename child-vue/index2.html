@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script>
+        //如果应用 加载 刚开始我加载A应用 window.a B应用 window.a
+        //当应用切换  沙箱 创造一个干净的环境 给这个子应用使用，当切换时 可以选择丢弃属性和恢复属性
+
+        //JS沙箱  proxy(要考虑浏览器是否支持)
+
+        //快照沙箱   前后比对  把区别保存起来  再回到之前
+        class SnapshotSandbox {
+            constructor() {
+                this.proxy = window; //window属性
+                this.modifyPropsMap = {}; //记录在window上的修改
+                this.active();
+            }
+            //激活
+            active() {
+                this.windowSnapshot = {}; //拍照 
+                for (const prop in window) {
+                    if (window.hasOwnProperty(prop)) {
+                        this.windowSnapshot[prop] = window[prop]
+                    }
+                    Object.keys(this.modifyPropsMap).forEach(p => {
+                        window[p] = this.modifyPropsMap[p]
+                    })
+                }
+            }
+            //失活
+            inactive() {
+                for (const prop in window) {
+                    if (window.hasOwnProperty(prop)) {
+                        if (window[prop] != this.windowSnapshot[prop]) {
+                            this.modifyPropsMap[prop] = window[prop];
+                            window[prop] = this.windowSnapshot[prop];
+                        }
+                    }
+                }
+            }
+        }
+
+        let sandbox = new SnapshotSandbox();
+        //应用的开始到结束 切换后不能改变全局
+        ((window) => {
+            window.a = 1
+            window.b = 2
+            console.log(window.a, window.b)
+            sandbox.inactive()
+            console.log('inactive:', window.a, window.b)
+            sandbox.active() //失活后再还原
+            console.log('active:', window.a, window.b)
+        })(sandbox.proxy)
+
+
+        //如果是多个子应用 就不能用这个方式  可以使用es6 proxy
+
+        //代理沙箱 可以实现多应用沙箱 把不同的应用使用不同的代理来处理
+
+
+    </script>
+
+</body>
+
+</html>
