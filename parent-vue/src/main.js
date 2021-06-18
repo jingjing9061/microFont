@@ -23,8 +23,8 @@ async function loadScript(url) {
 registerApplication('myVueApp', async () => {
   console.log('加载模块')
   //systemJS 动态创建一个script 把chunk-vendors文件引入进来
-  await loadScript('http://localhost:10001/js/chunk-vendors.js')
-  await loadScript('http://localhost:10001/js/app.js')
+  await loadScript('http://localhost:10000/js/chunk-vendors.js')
+  await loadScript('http://localhost:10000/js/app.js')
   return window.singleVue; // bootstrap mount unmount
 
 },
